@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request, render_template
 app = Flask(__name__)
 
 names = []
+n = {}
 ms = []
 
 common_vars = [5, 23]
@@ -42,8 +43,9 @@ def messages():
 
     if request.method == 'POST':
         h = request.get_json()
+        #x = request.remote_addr
         x = request.remote_addr
-        ms.append({'ip': x, 'message': h['message']})
+        ms.append({'ip': x, 'message': h['message'], 'name' : n[x]})
         # print(ms)
         # print(ip)
         return h['message']
@@ -75,6 +77,7 @@ def set_keys():
         if(len(y) < 2):
             return 'No'
 
+        
         for i in y:
             if x != i:
                 return keys[i]
@@ -91,11 +94,10 @@ def root():
         s = show_names()
         if s == 'None':
             return render_template('first.html')
+
         return (s + '<br> <br>' + '<a href="/name" target="_self"> \
-                Enter your name</a>' + ' ' + '<a href="/image"target= \
-                "_self">Show image</a>' + ' ' + '<a href="/page" target= \
-                "_self">Show page</a>' + ' ' + '<a href="/code" target= \
-                "_self">Show code</a>')
+                Enter your name</a>' + '   ' + '<a href="/ajax"target= \
+                "_self">End To End Messages</a>')
 
 
 @app.route('/image', methods=['Get'])
@@ -117,6 +119,8 @@ def get_code():
 def add_name():
     if request.method == 'POST':
         h = request.get_json()
+        x = request.remote_addr
+        n[x] = h['name']
         names.append(h['name'])
         return h['name']
     else:

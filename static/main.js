@@ -47,6 +47,9 @@ function SHA1(msg) {
     };
     var blockstart;
     var i, j;
+
+    var username;
+    
     var W = new Array(80);
     var H0 = 0x67452301;
     var H1 = 0xEFCDAB89;
@@ -154,6 +157,7 @@ function hex2a(hexx) {
 function checkBin(n){return/^[01]{1,64}$/.test(n)}
 function checkDec(n){return/^[0-9]{1,64}$/.test(n)}
 function checkHex(n){return/^[0-9A-Fa-f]{1,64}$/.test(n)}
+
 function pad(s,z){s=""+s;return s.length<z?pad("0"+s,z):s}
 function unpad(s){s=""+s;return s.replace(/^0+/,'')}
 
@@ -186,7 +190,8 @@ var binToAscii = function (bin) {
     });
 };
 
-var ascii = "abcdefghijklmnopqrstuvwxyz"
+var ascii = "abcdefghijklmnopqrstuvwxyz "
+
 
 var times = 0
 
@@ -209,16 +214,24 @@ function padDecode(strr) {
     var i
     var s = ""
     for(i = 0; i < strr.length; i++){
+
+      //console.log(strr.charCodeAt(i))
+      //console.log(strr[i])
+
+      if(strr.charCodeAt(i) == 32)
+        h = 26
+      else
         h = strr.charCodeAt(i) - 97
-        mk = mutualKey.charCodeAt(i) % 26
 
-        dif = h - mk
+      mk = mutualKey.charCodeAt(i) % 27
 
-        while(dif < 0){
-            dif += 26
-        }
+      dif = h - mk
 
-        s = s + ascii[dif]
+      while(dif < 0){
+          dif += 27
+      }
+
+      s = s + ascii[dif]
 
     }
     return s
@@ -229,12 +242,22 @@ function padEncode(strr) {
     var i
     var s = ""
     for(i = 0; i < strr.length; i++){
+
+      //console.log(strr.charCodeAt(i))
+      //console.log(strr[i])
+
+      if(strr.charCodeAt(i) == 32)
+        h = 26
+      else
         h = strr.charCodeAt(i) - 97
-        mk = mutualKey.charCodeAt(i) % 26
 
-        dif = (h + mk) % 26
+      //h = strr.charCodeAt(i) - 97
+      mk = mutualKey.charCodeAt(i) % 27
 
-        s = s + ascii[dif]
+      dif = (h + mk) % 27
+
+      console.log(ascii[dif])
+      s = s + ascii[dif]
 
     }
     return s
@@ -373,7 +396,8 @@ function repeatLoad() {
                     decoded = padDecode(obj[i].message)
                     //console.log(decoded)
                     
-                    inString = inString + obj[i].ip + ": &nbsp;&nbsp;" + decoded + "<br>"
+                    inString = inString + "Encoded message: &nbsp;&nbsp;" + obj[i].ip + "- &nbsp;&nbsp;" + obj[i].name +": &nbsp;&nbsp;" + obj[i].message + "<br>"
+                    inString = inString + "Decoded message: &nbsp;&nbsp;" + obj[i].ip + "- &nbsp;&nbsp;" + obj[i].name +": &nbsp;&nbsp;" + decoded + "<br>"
                     // console.log(z)
                 }
                 document.getElementById("demo").innerHTML = inString;
